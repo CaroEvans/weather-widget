@@ -1,29 +1,37 @@
-import React, { Fragment, Component } from "react"
+import React, { Fragment, Component } from 'react'
+import './widget.scss';
 
 class Widget extends Component {
 
   constructor() {
     super()
     this.state = {
-      city: 'brisbane',
-      temperature: '-'
+      city: 'Brisbane',
+      temperature: '-',
+      icon: '',
+      description: ''
     }
     this.handleChange = this.handleChange.bind(this);
   }
 
-  search = (term) => {
-    const apiKey = 'topsecret'
-    return fetch(`https://api.openweathermap.org/data/2.5/weather?q=${term}&appid=${apiKey}`).then(response => response.json())
+  searchForWeatherData = (term) => {
+    const apiKey = process.env.REACT_APP_MAP_API_KEY
+    fetch(`https://api.openweathermap.org/data/2.5/weather?q=${term}&units=metric&appid=${apiKey}`).then(response => response.json())
+    .then((data) => {
+      this.setState({ temperature: data.main.temp });
+      this.setState({ icon: data.weather[0].icon });
+      this.setState({ description: data.weather[0].description });
+    })
+    .catch(err => console.log('There was an error searching for weather' + err))
   }
 
-  handleChange(event) {
-    this.setState({city: event.target.value});
-    const searchTerm = this.state.city
-    this.search(searchTerm)
-    .then((data) => {
-      this.setState({temperature: data['main']['temp']});
-      console.log(data)
-    })
+  componentDidMount = () => { this.searchForWeatherData(this.state.city) }
+
+  handleChange = (event) => {
+    this.setState(
+      { city: event.target.value },
+      () => this.searchForWeatherData(this.state.city)
+    );
   }
 
   render() {
@@ -31,15 +39,20 @@ class Widget extends Component {
       <Fragment>
         <div className='container'>
           <div className='content'>
-            <label className='form-label' htmlFor="city">Select your city</label>
-            {/* <select name="city" id="city"> */}
-            <select name="city" id="city" value={this.state.city} onChange={this.handleChange}>
-              <option value="brisbane">Brisbane</option>
-              <option value="sydney">Sydney</option>
-              <option value="melbourne">Melbourne</option>
+            <label className='form-label' htmlFor='city'>Select your city:</label>
+            <select name='city' id='city' value={this.state.city} onChange={this.handleChange}>
+              <option value='Brisbane'>Brisbane</option>
+              <option value='Sydney'>Sydney</option>
+              <option value='Melbourne'>Melbourne</option>
             </select>
-            <p>{`${this.state.city}`}</p>
-            <p>{`${this.state.temperature}`}</p>
+            <p className='temperature'>
+              { this.state.icon &&
+                <span>
+                  <img className='weather-icon' src={`http://openweathermap.org/img/w/${this.state.icon}.png`} alt={`${this.state.description}`} />
+                  {`${this.state.temperature}`}°C
+                </span>
+              }
+            </p>
           </div>
         </div>
       </Fragment>
@@ -47,6 +60,4 @@ class Widget extends Component {
   }
 }
 
-export default  Widget;
-
-// api.openweathermap.org/data/2.5/weather?q={city name}&appid={API key}
+export default Widget;
