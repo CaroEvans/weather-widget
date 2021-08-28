@@ -3,15 +3,11 @@ import './widget.scss'
 
 class Widget extends Component {
 
-  constructor() {
-    super()
-    this.state = {
-      city: 'Brisbane',
-      temperature: '-',
-      icon: '',
-      description: ''
-    }
-    this.handleChange = this.handleChange.bind(this)
+  state = {
+    city: 'Brisbane',
+    temperature: '-',
+    icon: '',
+    description: ''
   }
 
   searchForWeatherData = (term) => {
