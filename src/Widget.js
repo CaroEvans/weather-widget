@@ -1,5 +1,5 @@
 import React, { Fragment, Component } from 'react'
-import './widget.scss';
+import './widget.scss'
 
 class Widget extends Component {
 
@@ -11,28 +11,39 @@ class Widget extends Component {
       icon: '',
       description: ''
     }
-    this.handleChange = this.handleChange.bind(this);
+    this.handleChange = this.handleChange.bind(this)
   }
 
   searchForWeatherData = (term) => {
-    const apiKey = process.env.REACT_APP_MAP_API_KEY
-    fetch(`https://api.openweathermap.org/data/2.5/weather?q=${term}&units=metric&appid=${apiKey}`).then(response => response.json())
+    const openMapsApiKey = process.env.REACT_APP_OPEN_MAPS_API_KEY
+    fetch(`https://api.openweathermap.org/data/2.5/weather?q=${term}&units=metric&appid=${openMapsApiKey}`)
+    .then(response => response.json())
     .then((data) => {
-      this.setState({ temperature: data.main.temp });
-      this.setState({ icon: data.weather[0].icon });
-      this.setState({ description: data.weather[0].description });
+      this.setState({ temperature: data.main.temp })
+      this.setState({ icon: data.weather[0].icon })
+      this.setState({ description: data.weather[0].description })
     })
     .catch(err => console.log('There was an error searching for weather' + err))
   }
 
-  componentDidMount = () => { this.searchForWeatherData(this.state.city) }
+  findLocationOrUseDefault = () => {
+    fetch('https://extreme-ip-lookup.com/json/')
+    .then( response => response.json())
+    .then(response => this.setState({ city: response.city }))
+    .then(this.searchForWeatherData(this.state.city))
+  }
+
+  componentDidMount = () => {
+    this.findLocationOrUseDefault()
+  }
 
   handleChange = (event) => {
     this.setState(
       { city: event.target.value },
       () => this.searchForWeatherData(this.state.city)
-    );
+    )
   }
+
 
   render() {
     return (
@@ -46,10 +57,12 @@ class Widget extends Component {
               <option value='Melbourne'>Melbourne</option>
             </select>
             <p className='temperature'>
+              <span> The current temperature in </span>
+              <span className='city-title'>{`${this.state.city}`}:</span>
               { this.state.icon &&
-                <span>
-                  <img className='weather-icon' src={`http://openweathermap.org/img/w/${this.state.icon}.png`} alt={`${this.state.description}`} />
-                  {`${this.state.temperature}`}°C
+                <span className='weather-icon'>
+                  <img src={`http://openweathermap.org/img/w/${this.state.icon}.png`} alt={`${this.state.description}`} />
+                  {`${Math.trunc(this.state.temperature)}`}°C
                 </span>
               }
             </p>
@@ -60,4 +73,4 @@ class Widget extends Component {
   }
 }
 
-export default Widget;
+export default Widget

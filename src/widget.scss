@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400&display=swap');
+
 body {
   font-family: 'Open Sans', sans-serif;
   font-size: 1rem;
@@ -16,15 +18,19 @@ body {
 .form-label {
   margin-bottom: 1rem;
 }
+.city-title {
+  display: block;
+  font-weight: 400;
+}
 .temperature {
   margin-top: 2rem;
-  span {
+  .weather-icon {
     display: flex;
     align-items: center;
     font-size: 3rem;
     display: block;
+    img {
+      height: 3rem;
+    }
   }
-}
-.weather-icon {
-  height: 3rem;
 }
