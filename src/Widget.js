@@ -8,7 +8,7 @@ class Widget extends Component {
 
   state = {
     location: 'Brisbane,AU',
-    temperature: '-',
+    temperature: '',
     icon: '',
     description: '',
     loading: false
