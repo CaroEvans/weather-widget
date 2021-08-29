@@ -4,15 +4,15 @@ import './widget.scss'
 class Widget extends Component {
 
   state = {
-    city: 'Brisbane',
+    location: 'Brisbane,AU',
     temperature: '-',
     icon: '',
     description: ''
   }
 
-  searchForWeatherData = (term) => {
+  searchForWeatherData = (location_string) => {
     const openMapsApiKey = process.env.REACT_APP_OPEN_MAPS_API_KEY
-    fetch(`https://api.openweathermap.org/data/2.5/weather?q=${term}&units=metric&appid=${openMapsApiKey}`)
+    fetch(`https://api.openweathermap.org/data/2.5/weather?q=${location_string}&units=metric&appid=${openMapsApiKey}`)
     .then(response => response.json())
     .then((data) => {
       this.setState({ temperature: data.main.temp })
@@ -25,8 +25,10 @@ class Widget extends Component {
   findLocationOrUseDefault = () => {
     fetch('https://extreme-ip-lookup.com/json/')
     .then( response => response.json())
-    .then(response => this.setState({ city: response.city }))
-    .then(this.searchForWeatherData(this.state.city))
+    .then(response => {
+      this.setState({ location: `${response.city},${response.countryCode}`})
+    })
+    .then(this.searchForWeatherData(this.state.location))
   }
 
   componentDidMount = () => {
@@ -35,8 +37,8 @@ class Widget extends Component {
 
   handleChange = (event) => {
     this.setState(
-      { city: event.target.value },
-      () => this.searchForWeatherData(this.state.city)
+      { location: event.target.value },
+      () => this.searchForWeatherData(this.state.location)
     )
   }
 
@@ -46,15 +48,15 @@ class Widget extends Component {
       <Fragment>
         <div className='container'>
           <div className='content'>
-            <label className='form-label' htmlFor='city'>Select your city:</label>
-            <select name='city' id='city' value={this.state.city} onChange={this.handleChange}>
-              <option value='Brisbane'>Brisbane</option>
-              <option value='Sydney'>Sydney</option>
-              <option value='Melbourne'>Melbourne</option>
+            <label className='form-label' htmlFor='location'>Select your city:</label>
+            <select name='location' id='location' value={this.state.location} onChange={this.handleChange}>
+              <option value='Brisbane, AU'>Brisbane</option>
+              <option value='Sydney, AU'>Sydney</option>
+              <option value='Melbourne, AU'>Melbourne</option>
             </select>
             <p className='temperature'>
               <span> The current temperature in </span>
-              <span className='city-title'>{`${this.state.city}`}:</span>
+              <span className='city-title'>{`${this.state.location.split(',').shift()}`}:</span>
               { this.state.icon &&
                 <span className='weather-icon'>
                   <img src={`http://openweathermap.org/img/w/${this.state.icon}.png`} alt={`${this.state.description}`} />
