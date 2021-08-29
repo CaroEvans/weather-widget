@@ -2,9 +2,9 @@ const IpLookupApi = {
 
   // TO DO: test these methods
 
-  findLocationData() {
-    return fetch('https://extreme-ip-lookup.com/json/')
-    .then( response => response.json())
+  async findLocationData() {
+    const response = await fetch('https://extreme-ip-lookup.com/json/')
+    return await response.json()
   }
 }
 
