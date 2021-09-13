@@ -21,6 +21,7 @@ class Widget extends Component {
       .then((data) => {
         this.setState({ temperature: data.main.temp })
         this.setState({ description: data.weather[0].description })
+        this.setState({ location: location_string })
         return weatherService.findIconBlob(data.weather[0].icon)
       })
       .then(image_blob => {
@@ -47,16 +48,13 @@ class Widget extends Component {
   }
 
   handleChange = (event) => {
-    const { location } = this.state;
-    this.setState(
-      { location: event.target.value },
-      () => this.searchForWeatherData(location)
-    )
+    this.setState({ loading: true }, () => {
+      this.searchForWeatherData(event.target.value)
+    })
   }
 
   render() {
     const { loading, icon, location, temperature, description } = this.state;
-    console.log(icon)
     return (
       <Fragment>
         <div className='container'>
