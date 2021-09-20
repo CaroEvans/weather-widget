@@ -22,10 +22,7 @@ class Widget extends Component {
         this.setState({ temperature: data.main.temp })
         this.setState({ description: data.weather[0].description })
         this.setState({ location: location_string })
-        return weatherService.findIconBlob(data.weather[0].icon)
-      })
-      .then(image_blob => {
-        this.setState({ icon: URL.createObjectURL(image_blob) })
+        this.setState({ icon: data.weather[0].icon })
       })
       .then(() => this.setState({ loading: false }))
       .catch(err => console.log('There was an error searching for weather' + err))
@@ -74,7 +71,7 @@ class Widget extends Component {
                   </span>
                   { icon && description && temperature &&
                     <span className='weather-icon'>
-                      <img src={icon} alt={`${description}`} />
+                      <img src={`http://openweathermap.org/img/w/${icon}.png`} alt={`${description}`} />
                       {`${Math.trunc(temperature)}`}°C
                     </span>
                   }
